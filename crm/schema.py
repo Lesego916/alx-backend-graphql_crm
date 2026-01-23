@@ -1,23 +1,22 @@
 import graphene
-from graphene_django.filter import DjangoFilterConnectionField
-from graphene import relay
 from graphene_django import DjangoObjectType
+from graphql import GraphQLError
+
 from .models import Customer
 
-class CustomerNode(DjangoObjectType):
+
+class CustomerType(DjangoObjectType):
     class Meta:
         model = Customer
-        interfaces = (relay.Node,)
         fields = ("id", "name", "email", "phone")
 
-class Query(graphene.ObjectType):
-    all_customers = DjangoFilterConnectionField(CustomerNode)
 
-    def resolve_all_customers(root, info):
+class Query(graphene.ObjectType):
+    all_customers = graphene.List(CustomerType)
+
+    def resolve_all_customers(self, info):
         return Customer.objects.all()
 
-class Mutation(graphene.ObjectType):
-    create_customer = CreateCustomer.Field()
 
 class CreateCustomer(graphene.Mutation):
     customer = graphene.Field(CustomerType)
@@ -28,6 +27,17 @@ class CreateCustomer(graphene.Mutation):
         phone = graphene.String(required=True)
 
     def mutate(self, info, name, email, phone):
-        customer = Customer(name=name, email=email, phone=phone)
-        customer.save()
+        if Customer.objects.filter(email=email).exists():
+            raise GraphQLError("Email already exists")
+
+        customer = Customer.objects.create(
+            name=name,
+            email=email,
+            phone=phone
+        )
         return CreateCustomer(customer=customer)
+
+
+class Mutation(graphene.ObjectType):
+    create_customer = CreateCustomer.Field()
+
