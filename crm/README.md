@@ -30,4 +30,4 @@ celery -A crm beat -l info
 
 Check:
 
-/tmp/crmreportlog.txt
+/tmp/crm_report_log.txt

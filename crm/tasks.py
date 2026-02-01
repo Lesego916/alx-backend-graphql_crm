@@ -3,7 +3,7 @@ import requests
 from datetime import datetime
 
 @shared_task(name="crm.tasks.generatecrmreport")
-def generatecrmreport():
+def generate_crm_report():
     query = """
     query {
         customers {
@@ -28,5 +28,5 @@ def generatecrmreport():
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    with open("/tmp/crmreportlog.txt", "a") as f:
+    with open("/tmp/crm_report_log.txt", "a") as f:
         f.write(f"{timestamp} - Report: {customers} customers, {orders} orders, {revenue} revenue\n")
