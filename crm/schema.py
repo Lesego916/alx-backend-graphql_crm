@@ -1,6 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 from graphql import GraphQLError
+from crm.models import Product
 
 from .models import Customer
 
@@ -37,7 +38,22 @@ class CreateCustomer(graphene.Mutation):
         )
         return CreateCustomer(customer=customer)
 
+class UpdateLowStockProducts(graphene.Mutation):
+    products = graphene.List(lambda: ProductType)
+    message = graphene.String()
+
+    def mutate(self, info):
+        products = Product.objects.filter(stock__lt=10)
+
+        for p in products:
+            p.stock += 10
+            p.save()
+
+        return UpdateLowStockProducts(products=products, message="updated")
+
 
 class Mutation(graphene.ObjectType):
     create_customer = CreateCustomer.Field()
+    update_low_stock_products = UpdateLowStockProducts.Field()
+
 
