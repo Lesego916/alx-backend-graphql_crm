@@ -1,6 +1,7 @@
-INSTALLED_APPS = [
-    "django_crontab",
+INSTALLED_APPS += [
+    'django_celery_beat',
 ]
+
 
 CRONJOBS = [
     ('*/5 * * * *', 'crm.cron.logcrmheartbeat'),
