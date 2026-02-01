@@ -27,7 +27,7 @@ query {
 
 result = client.execute(query)
 
-with open("/tmp/orderreminderslog.txt", "a") as f:
+with open("/tmp/order_reminders_log.txt", "a") as f:
     for edge in result["allOrders"]["edges"]:
         order = edge["node"]
         f.write(f"{datetime.now()} Order {order['id']} -> {order['customer']['email']}\n")
